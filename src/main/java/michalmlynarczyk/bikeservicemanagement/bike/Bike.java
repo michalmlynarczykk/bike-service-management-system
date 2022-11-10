@@ -1,15 +1,17 @@
 package michalmlynarczyk.bikeservicemanagement.bike;
 
 import michalmlynarczyk.bikeservicemanagement.client.Client;
+import michalmlynarczyk.bikeservicemanagement.order.Order;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Entity(name = "bike")
 public class Bike {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    private Long bikeId;
 
     @ManyToOne
     @JoinColumn(name = "client_id")
@@ -26,6 +28,9 @@ public class Bike {
     @NotBlank
     private String color;
 
+    @OneToMany(mappedBy = "bike")
+    private List<Order> repairOrder;
+
     public Bike() {
     }
 
@@ -36,16 +41,24 @@ public class Bike {
         this.color = color;
     }
 
+    public Bike(Client client, String brand, String model, String color, List<Order> repairOrder) {
+        this.client = client;
+        this.brand = brand;
+        this.model = model;
+        this.color = color;
+        this.repairOrder = repairOrder;
+    }
+
+    public Long getBikeId() {
+        return bikeId;
+    }
+
     public Client getClient() {
         return client;
     }
 
     public void setClient(Client client) {
         this.client = client;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getBrand() {
@@ -70,5 +83,13 @@ public class Bike {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public List<Order> getRepairOrder() {
+        return repairOrder;
+    }
+
+    public void setRepairOrder(List<Order> repairOrder) {
+        this.repairOrder = repairOrder;
     }
 }
