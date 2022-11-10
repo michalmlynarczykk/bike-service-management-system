@@ -33,11 +33,11 @@ public class Order {
     @Transient
     private Double totalRepairPrice;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "client_id")
     private Client client;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "bike_id")
     private Bike bike;
 
