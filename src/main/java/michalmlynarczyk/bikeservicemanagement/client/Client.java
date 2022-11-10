@@ -1,27 +1,36 @@
 package michalmlynarczyk.bikeservicemanagement.client;
 
+import michalmlynarczyk.bikeservicemanagement.order.Order;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Entity(name = "client")
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    private Long clientId;
+
     @Column(length = 50)
     @NotBlank
     private String firstName;
+
     @Column(length = 50)
     @NotBlank
     private String lastName;
+
     @Column(length = 50)
     @NotBlank
     private String phoneNumber;
+
+    @OneToMany(mappedBy = "client")
+    private List<Order> repairOrder;
 
     public Client() {
 
@@ -33,8 +42,15 @@ public class Client {
         this.phoneNumber = phoneNumber;
     }
 
-    public Long getId() {
-        return id;
+    public Client(String firstName, String lastName, String phoneNumber, List<Order> repairOrder) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.repairOrder = repairOrder;
+    }
+
+    public Long getClientId() {
+        return clientId;
     }
 
     public String getFirstName() {
@@ -59,5 +75,13 @@ public class Client {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public List<Order> getRepairOrder() {
+        return repairOrder;
+    }
+
+    public void setRepairOrder(List<Order> repairOrder) {
+        this.repairOrder = repairOrder;
     }
 }
