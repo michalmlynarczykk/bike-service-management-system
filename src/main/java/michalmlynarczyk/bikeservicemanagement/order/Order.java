@@ -10,27 +10,34 @@ import javax.validation.constraints.NotNull;
 import java.sql.Date;
 import java.util.List;
 
-@Entity(name = "order")
+@Entity(name = "repair_order")
 public class Order {
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "repairOrder")
     List<Part> parts;
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    private Long orderId;
+
     @Column
-    private Date date;
+    private Date orderDate;
+
     @Column(length = 500)
     @NotBlank
     private String description;
+
     @Column
     @NotNull
     private Double servicePrice;
+
     @Transient
     private Double totalRepairPrice;
-    @OneToOne
+
+    @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
-    @OneToOne
+
+    @ManyToOne
     @JoinColumn(name = "bike_id")
     private Bike bike;
 
@@ -38,23 +45,17 @@ public class Order {
 
     }
 
-    public Order(Date date, String description, Double servicePrice, Client client, Bike bike) {
-        this.date = date;
+    public Order(Date orderDate, String description, Double servicePrice, Client client, Bike bike) {
+        this.orderDate = orderDate;
         this.description = description;
         this.servicePrice = servicePrice;
         this.client = client;
         this.bike = bike;
     }
 
-    public Order(String description, Double servicePrice, Client client, Bike bike) {
-        this.description = description;
-        this.servicePrice = servicePrice;
-        this.client = client;
-        this.bike = bike;
-    }
-
-    public Order(Date date, String description, Double servicePrice, Double totalRepairPrice, Client client, Bike bike) {
-        this.date = date;
+    public Order(List<Part> parts, Date orderDate, String description, Double servicePrice, Double totalRepairPrice, Client client, Bike bike) {
+        this.parts = parts;
+        this.orderDate = orderDate;
         this.description = description;
         this.servicePrice = servicePrice;
         this.totalRepairPrice = totalRepairPrice;
@@ -62,16 +63,24 @@ public class Order {
         this.bike = bike;
     }
 
-    public Long getId() {
-        return id;
+    public Long getOrderId() {
+        return orderId;
     }
 
-    public Date getDate() {
-        return date;
+    public List<Part> getParts() {
+        return parts;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setParts(List<Part> parts) {
+        this.parts = parts;
+    }
+
+    public Date getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(Date orderDate) {
+        this.orderDate = orderDate;
     }
 
     public String getDescription() {
@@ -90,6 +99,14 @@ public class Order {
         this.servicePrice = servicePrice;
     }
 
+    public Double getTotalRepairPrice() {
+        return totalRepairPrice;
+    }
+
+    public void setTotalRepairPrice(Double totalRepairPrice) {
+        this.totalRepairPrice = totalRepairPrice;
+    }
+
     public Client getClient() {
         return client;
     }
@@ -104,21 +121,5 @@ public class Order {
 
     public void setBike(Bike bike) {
         this.bike = bike;
-    }
-
-    public Double getTotalRepairPrice() {
-        return totalRepairPrice;
-    }
-
-    public void setTotalRepairPrice(Double totalRepairPrice) {
-        this.totalRepairPrice = totalRepairPrice;
-    }
-
-    public List<Part> getParts() {
-        return parts;
-    }
-
-    public void setParts(List<Part> parts) {
-        this.parts = parts;
     }
 }
