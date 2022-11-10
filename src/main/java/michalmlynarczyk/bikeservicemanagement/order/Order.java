@@ -19,16 +19,18 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long orderId;
 
-    @Column
     private Date orderDate;
 
     @Column(length = 500)
     @NotBlank
     private String description;
 
-    @Column
     @NotNull
     private Double servicePrice;
+
+    @Enumerated(value = EnumType.STRING)
+    @NotNull
+    private OrderStatus status;
 
     @Transient
     private Double totalRepairPrice;
@@ -45,19 +47,33 @@ public class Order {
 
     }
 
-    public Order(Date orderDate, String description, Double servicePrice, Client client, Bike bike) {
+    public Order(Date orderDate,
+                 String description,
+                 Double servicePrice,
+                 OrderStatus status,
+                 Client client,
+                 Bike bike) {
         this.orderDate = orderDate;
         this.description = description;
         this.servicePrice = servicePrice;
+        this.status = status;
         this.client = client;
         this.bike = bike;
     }
 
-    public Order(List<Part> parts, Date orderDate, String description, Double servicePrice, Double totalRepairPrice, Client client, Bike bike) {
+    public Order(List<Part> parts,
+                 Date orderDate,
+                 String description,
+                 Double servicePrice,
+                 OrderStatus status,
+                 Double totalRepairPrice,
+                 Client client,
+                 Bike bike) {
         this.parts = parts;
         this.orderDate = orderDate;
         this.description = description;
         this.servicePrice = servicePrice;
+        this.status = status;
         this.totalRepairPrice = totalRepairPrice;
         this.client = client;
         this.bike = bike;
@@ -121,5 +137,13 @@ public class Order {
 
     public void setBike(Bike bike) {
         this.bike = bike;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 }
