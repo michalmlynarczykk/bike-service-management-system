@@ -1,21 +1,32 @@
 package michalmlynarczyk.bikeservicemanagement.bike;
 
+import lombok.*;
 import michalmlynarczyk.bikeservicemanagement.client.Client;
 import michalmlynarczyk.bikeservicemanagement.order.Order;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity(name = "bike")
+@Data
+@EqualsAndHashCode(exclude = "client")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Bike {
+    @SequenceGenerator(
+            name = "bike_sequence",
+            sequenceName = "bike_sequence",
+            allocationSize = 1
+    )
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long bikeId;
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "bike_sequence")
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "client_id")
-    private Client client;
     @Column(length = 50)
     @NotBlank
     private String brand;
@@ -28,68 +39,33 @@ public class Bike {
     @NotBlank
     private String color;
 
-    @OneToMany(mappedBy = "bike")
-    private List<Order> repairOrder;
+    @ManyToOne(
+            optional = false
+    )
+    @JoinColumn(
+            name = "client_id",
+            referencedColumnName = "id",
+            nullable = false
+    )
+    private Client client;
 
-    public Bike() {
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "bike",
+            orphanRemoval = true,
+            fetch = FetchType.EAGER)
+    private Set<Order> orders;
+
+    public void addOrder(Order order) {
+        if (orders == null) {
+            orders = new HashSet<>();
+        }
+        orders.add(order);
+        order.setBike(this);
     }
 
-    public Bike(Client client, String brand, String model, String color) {
-        this.client = client;
-        this.brand = brand;
-        this.model = model;
-        this.color = color;
+    public void removeOrder(Order order) {
+        orders.remove(order);
+        order.setBike(null);
     }
 
-    public Bike(Client client, String brand, String model, String color, List<Order> repairOrder) {
-        this.client = client;
-        this.brand = brand;
-        this.model = model;
-        this.color = color;
-        this.repairOrder = repairOrder;
-    }
-
-    public Long getBikeId() {
-        return bikeId;
-    }
-
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public List<Order> getRepairOrder() {
-        return repairOrder;
-    }
-
-    public void setRepairOrder(List<Order> repairOrder) {
-        this.repairOrder = repairOrder;
-    }
 }

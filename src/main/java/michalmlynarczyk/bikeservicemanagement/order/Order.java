@@ -1,24 +1,54 @@
 package michalmlynarczyk.bikeservicemanagement.order;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import michalmlynarczyk.bikeservicemanagement.bike.Bike;
 import michalmlynarczyk.bikeservicemanagement.client.Client;
 import michalmlynarczyk.bikeservicemanagement.part.Part;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.sql.Date;
 import java.util.List;
 
 @Entity(name = "repair_order")
-public class Order {
-    @OneToMany(mappedBy = "repairOrder")
-    List<Part> parts;
-
+@Data
+@EqualsAndHashCode(exclude = {"client", "bike"})
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Order implements Serializable {
+    @SequenceGenerator(
+            name = "repair_order_sequence",
+            sequenceName = "repair_order_sequence",
+            allocationSize = 1
+    )
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long orderId;
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "repair_order_sequence"
+    )
+    private Long id;
 
+    @NotNull
     private Date orderDate;
 
     @Column(length = 500)
@@ -35,115 +65,33 @@ public class Order {
     @Transient
     private Double totalRepairPrice;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "client_id")
-    private Client client;
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            orphanRemoval = true
+    )
+    @JoinColumn(
+            name = "repair_order_id",
+            referencedColumnName = "id"
+    )
+    private List<Part> parts;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "bike_id")
+    @ManyToOne(
+            optional = false
+    )
+    @JoinColumn(
+            name = "bike_id",
+            referencedColumnName = "id",
+            nullable = false)
     private Bike bike;
 
-    public Order() {
+    @ManyToOne(
+            optional = false
+    )
+    @JoinColumn(
+            name = "client_id",
+            referencedColumnName = "id",
+            nullable = false)
+    private Client client;
 
-    }
-
-    public Order(Date orderDate,
-                 String description,
-                 Double servicePrice,
-                 OrderStatus status,
-                 Client client,
-                 Bike bike) {
-        this.orderDate = orderDate;
-        this.description = description;
-        this.servicePrice = servicePrice;
-        this.status = status;
-        this.client = client;
-        this.bike = bike;
-    }
-
-    public Order(List<Part> parts,
-                 Date orderDate,
-                 String description,
-                 Double servicePrice,
-                 OrderStatus status,
-                 Double totalRepairPrice,
-                 Client client,
-                 Bike bike) {
-        this.parts = parts;
-        this.orderDate = orderDate;
-        this.description = description;
-        this.servicePrice = servicePrice;
-        this.status = status;
-        this.totalRepairPrice = totalRepairPrice;
-        this.client = client;
-        this.bike = bike;
-    }
-
-    public Long getOrderId() {
-        return orderId;
-    }
-
-    public List<Part> getParts() {
-        return parts;
-    }
-
-    public void setParts(List<Part> parts) {
-        this.parts = parts;
-    }
-
-    public Date getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(Date orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Double getServicePrice() {
-        return servicePrice;
-    }
-
-    public void setServicePrice(Double servicePrice) {
-        this.servicePrice = servicePrice;
-    }
-
-    public Double getTotalRepairPrice() {
-        return totalRepairPrice;
-    }
-
-    public void setTotalRepairPrice(Double totalRepairPrice) {
-        this.totalRepairPrice = totalRepairPrice;
-    }
-
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    public Bike getBike() {
-        return bike;
-    }
-
-    public void setBike(Bike bike) {
-        this.bike = bike;
-    }
-
-    public OrderStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
 }
