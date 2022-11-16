@@ -51,8 +51,7 @@ public class Bike {
 
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy = "bike",
-            orphanRemoval = true,
-            fetch = FetchType.EAGER)
+            orphanRemoval = true)
     private Set<Order> orders;
 
     public void addOrder(Order order) {

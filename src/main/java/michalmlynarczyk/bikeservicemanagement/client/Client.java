@@ -10,7 +10,6 @@ import michalmlynarczyk.bikeservicemanagement.order.Order;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -52,13 +51,11 @@ public class Client {
 
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy = "client",
-            orphanRemoval = true,
-            fetch = FetchType.EAGER)
+            orphanRemoval = true)
     private Set<Bike> bikes;
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy = "client",
-            orphanRemoval = true,
-            fetch = FetchType.EAGER)
+            orphanRemoval = true)
     private Set<Order> orders;
 
     public void addBike(Bike bike) {
